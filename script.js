@@ -662,6 +662,7 @@ function makePrompt() {
     processLines.push(
       [
         stepInfo[stepKey].title,
+        "- 질문 설명: " + stepInfo[stepKey].guide,
         "- 최종 선택 단어: " + toText(selected),
         "- 단계에서 걸린 시간: " + getTimeText(stepKey),
         "- 선택했다가 취소한 단어: " + toText(deselected)

@@ -515,6 +515,12 @@ function makePrompt() {
       const deselected = journeyLog.deselectedWords[stepKey] || [];
       const uniqueDeselected = [...new Set(deselected)];
 
+      const deselected = journeyLog.deselectedWords[stepKey] || [];
+
+      const uniqueDeselected = [...new Set(deselected)].filter((word) => {
+        return !info.selected.includes(word);
+        });
+
       const deselectedText = uniqueDeselected.length > 0
         ? uniqueDeselected.join(", ")
         : "없음";

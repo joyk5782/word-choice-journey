@@ -185,9 +185,17 @@ function renderWordSelection({ title, words, selectCount, resultKey, guideText }
       const alreadySelected = currentSelection.includes(word);
 
       if (alreadySelected) {
-        currentSelection = currentSelection.filter((item) => item !== word);
-        button.classList.remove("selected");
-      } else {
+  currentSelection = currentSelection.filter((item) => item !== word);
+  button.classList.remove("selected");
+
+  const stepKey = getCurrentStepKey();
+
+  if (!journeyLog.deselectedWords[stepKey]) {
+    journeyLog.deselectedWords[stepKey] = [];
+  }
+
+  journeyLog.deselectedWords[stepKey].push(word);
+} else {
         if (currentSelection.length >= selectCount) {
           return;
         }
@@ -204,6 +212,7 @@ function renderWordSelection({ title, words, selectCount, resultKey, guideText }
   });
 
   nextBtn.onclick = () => {
+    saveStepTime();
     answers[resultKey] = [...currentSelection];
 
     if (getCurrentStepKey() === "step8") {
@@ -243,7 +252,17 @@ function renderRecoveryStep() {
       button.textContent = candidate;
 
       button.addEventListener("click", () => {
-        recoverySelection[hardWord] = candidate;
+  const stepKey = getCurrentStepKey();
+
+  if (recoverySelection[hardWord] && recoverySelection[hardWord] !== candidate) {
+    if (!journeyLog.deselectedWords[stepKey]) {
+      journeyLog.deselectedWords[stepKey] = [];
+    }
+
+    journeyLog.deselectedWords[stepKey].push(`${hardWord} → ${recoverySelection[hardWord]}`);
+  }
+
+  recoverySelection[hardWord] = candidate;
 
         options.querySelectorAll(".word-btn").forEach((btn) => {
           btn.classList.remove("selected");
@@ -265,6 +284,7 @@ function renderRecoveryStep() {
   });
 
   nextBtn.onclick = () => {
+    saveStepTime();
     answers.recoveryWords = answers.remainingHardWords.map((word) => recoverySelection[word]);
 
     currentStepIndex += 1;
@@ -275,6 +295,17 @@ function renderRecoveryStep() {
 
 function updateCounter(selected, total) {
   counter.textContent = `${selected} / ${total}`;
+}
+
+function saveStepTime() {
+  const stepKey = getCurrentStepKey();
+
+  if (!journeyLog.stepStartTime) {
+    return;
+  }
+
+  const elapsedMs = Date.now() - journeyLog.stepStartTime;
+  journeyLog.stepTimes[stepKey] = elapsedMs;
 }
 
 function showResult() {

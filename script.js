@@ -40,6 +40,12 @@ const answers = {
   finalWords: []
 };
 
+const journeyLog = {
+  stepTimes: {},
+  deselectedWords: {},
+  stepStartTime: null
+};
+
 let currentSelection = [];
 let recoverySelection = {};
 
@@ -66,6 +72,8 @@ function renderStep() {
 
   currentSelection = [];
   recoverySelection = {};
+  
+  journeyLog.stepStartTime = Date.now();
 
   wordArea.innerHTML = "";
   nextBtn.disabled = true;

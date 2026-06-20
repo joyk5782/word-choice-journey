@@ -1,22 +1,10 @@
-const screens = {
-  start: document.getElementById("start-screen"),
-  journey: document.getElementById("journey-screen"),
-  result: document.getElementById("result-screen")
-};
+// script.js
 
-const stepLabel = document.getElementById("step-label");
-const stepTitle = document.getElementById("step-title");
-const counter = document.getElementById("counter");
-const guide = document.getElementById("guide");
-const wordArea = document.getElementById("word-area");
+let currentStep = 0;
+let currentSelection = [];
+let recoverySelection = {};
 
-const startBtn = document.getElementById("start-btn");
-const backBtn = document.getElementById("back-btn");
-const nextBtn = document.getElementById("next-btn");
-const copyBtn = document.getElementById("copy-btn");
-const restartBtn = document.getElementById("restart-btn");
-
-const stepKeys = [
+const stepOrder = [
   "step1",
   "step2",
   "step3",
@@ -26,8 +14,6 @@ const stepKeys = [
   "step7",
   "step8"
 ];
-
-let currentStepIndex = 0;
 
 const answers = {
   pastPositive: [],
@@ -46,48 +32,122 @@ const journeyLog = {
   stepStartTime: null
 };
 
-let currentSelection = [];
-let recoverySelection = {};
+const introScreen = document.getElementById("intro-screen");
+const journeyScreen = document.getElementById("journey-screen");
+const resultScreen = document.getElementById("result-screen");
 
-function showScreen(name) {
-  Object.values(screens).forEach((screen) => screen.classList.remove("active"));
-  screens[name].classList.add("active");
-}
+const startBtn = document.getElementById("start-btn");
+const stepTitle = document.getElementById("step-title");
+const guideText = document.getElementById("guide-text");
+const wordArea = document.getElementById("word-area");
+const counter = document.getElementById("counter");
+const prevBtn = document.getElementById("prev-btn");
+const nextBtn = document.getElementById("next-btn");
+
+const finalWordsArea = document.getElementById("final-words");
+const resultSummary = document.getElementById("result-summary");
+const copyPromptBtn = document.getElementById("copy-prompt-btn");
+const restartBtn = document.getElementById("restart-btn");
+
+startBtn.addEventListener("click", () => {
+  introScreen.classList.remove("active");
+  journeyScreen.classList.add("active");
+  resultScreen.classList.remove("active");
+
+  currentStep = 0;
+  renderStep();
+});
+
+prevBtn.addEventListener("click", () => {
+  if (currentStep > 0) {
+    saveStepTime();
+    currentStep -= 1;
+    renderStep();
+  }
+});
+
+restartBtn.addEventListener("click", () => {
+  currentStep = 0;
+  currentSelection = [];
+  recoverySelection = {};
+
+  Object.keys(answers).forEach((key) => {
+    answers[key] = [];
+  });
+
+  journeyLog.stepTimes = {};
+  journeyLog.deselectedWords = {};
+  journeyLog.stepStartTime = null;
+
+  resultScreen.classList.remove("active");
+  journeyScreen.classList.remove("active");
+  introScreen.classList.add("active");
+});
+
+copyPromptBtn.addEventListener("click", async () => {
+  const prompt = makePrompt();
+
+  try {
+    await navigator.clipboard.writeText(prompt);
+    copyPromptBtn.textContent = "복사 완료";
+    setTimeout(() => {
+      copyPromptBtn.textContent = "AI 프롬프트 복사하기";
+    }, 1500);
+  } catch (error) {
+    alert("복사에 실패했습니다. 다시 시도해주세요.");
+  }
+});
 
 function getCurrentStepKey() {
-  return stepKeys[currentStepIndex];
+  return stepOrder[currentStep];
 }
 
-function getStepNumber() {
-  return currentStepIndex + 1;
+function startStepTime() {
+  journeyLog.stepStartTime = Date.now();
 }
 
-function setGuideText(text) {
-  guide.textContent = text;
+function saveStepTime() {
+  const stepKey = getCurrentStepKey();
+
+  if (!stepKey || !journeyLog.stepStartTime) {
+    return;
+  }
+
+  const elapsedMs = Date.now() - journeyLog.stepStartTime;
+
+  if (!journeyLog.stepTimes[stepKey]) {
+    journeyLog.stepTimes[stepKey] = 0;
+  }
+
+  journeyLog.stepTimes[stepKey] += elapsedMs;
+  journeyLog.stepStartTime = Date.now();
+}
+
+function logDeselectedWord(word) {
+  const stepKey = getCurrentStepKey();
+
+  if (!journeyLog.deselectedWords[stepKey]) {
+    journeyLog.deselectedWords[stepKey] = [];
+  }
+
+  journeyLog.deselectedWords[stepKey].push(word);
 }
 
 function renderStep() {
   const stepKey = getCurrentStepKey();
-  const stepNumber = getStepNumber();
 
   currentSelection = [];
   recoverySelection = {};
-  
-  journeyLog.stepStartTime = Date.now();
 
-  wordArea.innerHTML = "";
-  nextBtn.disabled = true;
-  backBtn.style.visibility = currentStepIndex === 0 ? "hidden" : "visible";
-
-  stepLabel.textContent = `${stepNumber}단계`;
+  startStepTime();
 
   if (stepKey === "step1") {
     renderWordSelection({
       title: wordPools.step1.title,
       words: wordPools.step1.words,
       selectCount: wordPools.step1.selectCount,
-      resultKey: "pastPositive",
-      guideText: "과거의 기억 중 따뜻하거나 좋았던 순간과 연결되는 단어를 5개 골라주세요."
+      resultKey: flow.step1.resultKey,
+      guideText: "과거를 떠올릴 때 긍정적인 순간과 연결되는 단어 5개를 골라주세요."
     });
     return;
   }
@@ -97,8 +157,8 @@ function renderStep() {
       title: wordPools.step2.title,
       words: wordPools.step2.words,
       selectCount: wordPools.step2.selectCount,
-      resultKey: "pastNegative",
-      guideText: "과거를 떠올릴 때 아프거나 무겁게 남아 있는 단어를 5개 골라주세요."
+      resultKey: flow.step2.resultKey,
+      guideText: "과거를 떠올릴 때 아직 무겁게 남아 있는 단어 5개를 골라주세요."
     });
     return;
   }
@@ -108,8 +168,8 @@ function renderStep() {
       title: wordPools.step3.title,
       words: wordPools.step3.words,
       selectCount: wordPools.step3.selectCount,
-      resultKey: "currentPrecious",
-      guideText: "지금의 내가 중요하게 여기고, 지키고 싶은 단어를 10개 골라주세요."
+      resultKey: flow.step3.resultKey,
+      guideText: "지금의 내가 소중하게 생각하는 단어 10개를 골라주세요."
     });
     return;
   }
@@ -119,8 +179,8 @@ function renderStep() {
       title: wordPools.step4.title,
       words: wordPools.step4.words,
       selectCount: wordPools.step4.selectCount,
-      resultKey: "currentHard",
-      guideText: "지금의 나에게 부담스럽거나 힘들게 느껴지는 단어를 10개 골라주세요."
+      resultKey: flow.step4.resultKey,
+      guideText: "지금의 내가 힘들게 느끼는 단어 10개를 골라주세요."
     });
     return;
   }
@@ -129,11 +189,11 @@ function renderStep() {
     const words = [...answers.pastPositive, ...answers.currentPrecious];
 
     renderWordSelection({
-      title: "5단계. 과거와 지금 나를 지탱하는 단어",
+      title: flow.step5.title,
       words,
-      selectCount: 5,
-      resultKey: "supportingWords",
-      guideText: "과거의 긍정과 현재의 소중함 중, 지금까지 나를 지탱해온 단어 5개를 골라주세요."
+      selectCount: flow.step5.selectCount,
+      resultKey: flow.step5.resultKey,
+      guideText: "과거의 긍정 단어와 지금 소중한 단어 중, 나를 지탱하는 단어 5개를 골라주세요."
     });
     return;
   }
@@ -142,11 +202,11 @@ function renderStep() {
     const words = [...answers.pastNegative, ...answers.currentHard];
 
     renderWordSelection({
-      title: "6단계. 남아 있는 힘든 단어",
+      title: flow.step6.title,
       words,
-      selectCount: 5,
-      resultKey: "remainingHardWords",
-      guideText: "과거와 현재의 힘듦 중, 아직 내 안에 크게 남아 있는 단어 5개를 골라주세요."
+      selectCount: flow.step6.selectCount,
+      resultKey: flow.step6.resultKey,
+      guideText: "과거의 부정 단어와 지금 힘든 단어 중, 아직 남아 있는 힘든 단어 5개를 골라주세요."
     });
     return;
   }
@@ -160,24 +220,25 @@ function renderStep() {
     const words = [...answers.supportingWords, ...answers.recoveryWords];
 
     renderWordSelection({
-      title: "8단계. 최종 5개의 단어",
+      title: flow.step8.title,
       words,
-      selectCount: 5,
-      resultKey: "finalWords",
+      selectCount: flow.step8.selectCount,
+      resultKey: flow.step8.resultKey,
       guideText: "나를 지탱한 단어와 힘든 무게를 극복할 단어 중, 지금의 나에게 가장 중요한 최종 5개를 골라주세요."
     });
   }
 }
 
-function renderWordSelection({ title, words, selectCount, resultKey, guideText }) {
+function renderWordSelection({ title, words, selectCount, resultKey, guideText: guide }) {
   stepTitle.textContent = title;
-  setGuideText(guideText);
-  updateCounter(0, selectCount);
+  guideText.textContent = guide;
+  wordArea.innerHTML = "";
 
   const uniqueWords = [...new Set(words)];
 
   uniqueWords.forEach((word) => {
     const button = document.createElement("button");
+    button.type = "button";
     button.className = "word-btn";
     button.textContent = word;
 
@@ -185,17 +246,11 @@ function renderWordSelection({ title, words, selectCount, resultKey, guideText }
       const alreadySelected = currentSelection.includes(word);
 
       if (alreadySelected) {
-  currentSelection = currentSelection.filter((item) => item !== word);
-  button.classList.remove("selected");
+        currentSelection = currentSelection.filter((item) => item !== word);
+        button.classList.remove("selected");
 
-  const stepKey = getCurrentStepKey();
-
-  if (!journeyLog.deselectedWords[stepKey]) {
-    journeyLog.deselectedWords[stepKey] = [];
-  }
-
-  journeyLog.deselectedWords[stepKey].push(word);
-} else {
+        logDeselectedWord(word);
+      } else {
         if (currentSelection.length >= selectCount) {
           return;
         }
@@ -204,33 +259,35 @@ function renderWordSelection({ title, words, selectCount, resultKey, guideText }
         button.classList.add("selected");
       }
 
-      updateCounter(currentSelection.length, selectCount);
-      nextBtn.disabled = currentSelection.length !== selectCount;
+      updateCounter(selectCount);
     });
 
     wordArea.appendChild(button);
   });
 
+  updateCounter(selectCount);
+
+  prevBtn.disabled = currentStep === 0;
+  nextBtn.disabled = true;
+  nextBtn.textContent = currentStep === stepOrder.length - 1 ? "결과 보기" : "다음";
+
   nextBtn.onclick = () => {
     saveStepTime();
+
     answers[resultKey] = [...currentSelection];
 
-    if (getCurrentStepKey() === "step8") {
-      showResult();
-      return;
+    if (currentStep === stepOrder.length - 1) {
+      renderResult();
+    } else {
+      currentStep += 1;
+      renderStep();
     }
-
-    currentStepIndex += 1;
-    renderStep();
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 }
 
 function renderRecoveryStep() {
-  stepTitle.textContent = "7단계. 힘든 무게를 극복할 단어";
-  setGuideText("남아 있는 힘든 단어마다, 그 무게를 넘어서는 데 필요한 단어를 하나씩 골라주세요.");
-  updateCounter(0, answers.remainingHardWords.length);
-
+  stepTitle.textContent = flow.step7.title;
+  guideText.textContent = "남아 있는 힘든 단어마다, 그 무게를 넘어서는 데 필요한 단어를 하나씩 골라주세요.";
   wordArea.innerHTML = "";
 
   answers.remainingHardWords.forEach((hardWord) => {
@@ -239,40 +296,34 @@ function renderRecoveryStep() {
 
     const title = document.createElement("p");
     title.className = "recovery-title";
-    title.textContent = `${hardWord}을/를 극복할 단어`;
+    title.textContent = hardWord;
 
     const options = document.createElement("div");
     options.className = "recovery-options";
 
-    const candidates = recoveryMap[hardWord] || ["회복", "용기", "정리", "시작"];
+    const candidates = recoveryMap[hardWord] || [];
 
     candidates.forEach((candidate) => {
       const button = document.createElement("button");
+      button.type = "button";
       button.className = "word-btn";
       button.textContent = candidate;
 
       button.addEventListener("click", () => {
-  const stepKey = getCurrentStepKey();
+        const previous = recoverySelection[hardWord];
 
-  if (recoverySelection[hardWord] && recoverySelection[hardWord] !== candidate) {
-    if (!journeyLog.deselectedWords[stepKey]) {
-      journeyLog.deselectedWords[stepKey] = [];
-    }
+        if (previous && previous !== candidate) {
+          logDeselectedWord(`${hardWord} → ${previous}`);
+        }
 
-    journeyLog.deselectedWords[stepKey].push(`${hardWord} → ${recoverySelection[hardWord]}`);
-  }
-
-  recoverySelection[hardWord] = candidate;
+        recoverySelection[hardWord] = candidate;
 
         options.querySelectorAll(".word-btn").forEach((btn) => {
           btn.classList.remove("selected");
         });
 
         button.classList.add("selected");
-
-        const selectedCount = Object.keys(recoverySelection).length;
-        updateCounter(selectedCount, answers.remainingHardWords.length);
-        nextBtn.disabled = selectedCount !== answers.remainingHardWords.length;
+        updateRecoveryCounter();
       });
 
       options.appendChild(button);
@@ -283,98 +334,123 @@ function renderRecoveryStep() {
     wordArea.appendChild(block);
   });
 
+  updateRecoveryCounter();
+
+  prevBtn.disabled = false;
+  nextBtn.disabled = true;
+  nextBtn.textContent = "다음";
+
   nextBtn.onclick = () => {
     saveStepTime();
+
     answers.recoveryWords = answers.remainingHardWords.map((word) => recoverySelection[word]);
 
-    currentStepIndex += 1;
+    currentStep += 1;
     renderStep();
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 }
 
-function updateCounter(selected, total) {
-  counter.textContent = `${selected} / ${total}`;
+function updateCounter(selectCount) {
+  counter.textContent = `${currentSelection.length} / ${selectCount}`;
+  nextBtn.disabled = currentSelection.length !== selectCount;
 }
 
-function saveStepTime() {
-  const stepKey = getCurrentStepKey();
+function updateRecoveryCounter() {
+  const selectedCount = Object.keys(recoverySelection).length;
+  const totalCount = answers.remainingHardWords.length;
 
-  if (!journeyLog.stepStartTime) {
-    return;
-  }
-
-  const elapsedMs = Date.now() - journeyLog.stepStartTime;
-  journeyLog.stepTimes[stepKey] = elapsedMs;
+  counter.textContent = `${selectedCount} / ${totalCount}`;
+  nextBtn.disabled = selectedCount !== totalCount;
 }
 
-function showResult() {
-  showScreen("result");
+function renderResult() {
+  journeyScreen.classList.remove("active");
+  resultScreen.classList.add("active");
 
-  const finalWordsEl = document.getElementById("final-words");
-  const resultSummaryEl = document.getElementById("result-summary");
-
-  finalWordsEl.innerHTML = "";
-  resultSummaryEl.innerHTML = "";
+  finalWordsArea.innerHTML = "";
+  resultSummary.innerHTML = "";
 
   answers.finalWords.forEach((word) => {
-    const span = document.createElement("span");
-    span.className = "final-word";
-    span.textContent = word;
-    finalWordsEl.appendChild(span);
+    const item = document.createElement("span");
+    item.className = "final-word";
+    item.textContent = word;
+    finalWordsArea.appendChild(item);
   });
 
-  const recoveryPairs = answers.remainingHardWords.map((word, index) => {
-    return `${word} → ${answers.recoveryWords[index]}`;
-  });
-
-  const sections = [
+  const summaries = [
     {
-      title: "1단계. 과거를 회상할 때 긍정적인 순간을 떠올리는 단어",
-      words: answers.pastPositive
+      title: "과거의 긍정 단어",
+      text: answers.pastPositive.join(", ")
     },
     {
-      title: "2단계. 과거를 회상할 때 부정적인 순간을 떠올리는 단어",
-      words: answers.pastNegative
+      title: "과거의 부정 단어",
+      text: answers.pastNegative.join(", ")
     },
     {
-      title: "3단계. 지금의 내가 소중하게 생각하는 단어",
-      words: answers.currentPrecious
+      title: "지금 소중한 단어",
+      text: answers.currentPrecious.join(", ")
     },
     {
-      title: "4단계. 지금의 내가 힘들게 느껴지는 단어",
-      words: answers.currentHard
+      title: "지금 힘든 단어",
+      text: answers.currentHard.join(", ")
     },
     {
-      title: "5단계. 과거와 지금 나를 지탱하는 단어",
-      words: answers.supportingWords
+      title: "나를 지탱하는 단어",
+      text: answers.supportingWords.join(", ")
     },
     {
-      title: "6단계. 남아 있는 힘든 단어",
-      words: answers.remainingHardWords
+      title: "남아 있는 힘든 단어",
+      text: answers.remainingHardWords.join(", ")
     },
     {
-      title: "7단계. 힘든 무게를 극복할 단어",
-      words: recoveryPairs
+      title: "극복을 위한 연결",
+      text: answers.remainingHardWords
+        .map((word, index) => `${word} → ${answers.recoveryWords[index]}`)
+        .join(", ")
     }
   ];
 
-  sections.forEach((section) => {
+  summaries.forEach((summary) => {
     const box = document.createElement("div");
     box.className = "summary-box";
 
-    const h3 = document.createElement("h3");
-    h3.textContent = section.title;
+    const title = document.createElement("h3");
+    title.textContent = summary.title;
 
-    const p = document.createElement("p");
-    p.textContent = section.words.join(", ");
+    const text = document.createElement("p");
+    text.textContent = summary.text;
 
-    box.appendChild(h3);
-    box.appendChild(p);
-    resultSummaryEl.appendChild(box);
+    box.appendChild(title);
+    box.appendChild(text);
+    resultSummary.appendChild(box);
   });
+}
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+function formatTime(ms) {
+  const totalSeconds = Math.round(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  if (minutes === 0) {
+    return `${seconds}초`;
+  }
+
+  return `${minutes}분 ${seconds}초`;
+}
+
+function getStepTitleByKey(stepKey) {
+  const titles = {
+    step1: "1단계. 과거를 회상할 때 긍정적인 순간을 떠올리는 단어",
+    step2: "2단계. 과거를 회상할 때 부정적인 순간을 떠올리는 단어",
+    step3: "3단계. 지금의 내가 소중하게 생각하는 단어",
+    step4: "4단계. 지금의 내가 힘들게 느껴지는 단어",
+    step5: "5단계. 과거와 지금 나를 지탱하는 단어",
+    step6: "6단계. 남아 있는 힘든 단어",
+    step7: "7단계. 힘든 무게를 극복할 단어",
+    step8: "8단계. 최종 5개의 단어"
+  };
+
+  return titles[stepKey] || stepKey;
 }
 
 function makePrompt() {
@@ -446,9 +522,7 @@ ${info.title}
     ? `${getStepTitleByKey(longestStep[0])} (${formatTime(longestStep[1])})`
     : "기록 없음";
 
-  const allDeselectedWords = Object.values(journeyLog.deselectedWords)
-    .flat();
-
+  const allDeselectedWords = Object.values(journeyLog.deselectedWords).flat();
   const uniqueAllDeselectedWords = [...new Set(allDeselectedWords)];
 
   return `
@@ -478,42 +552,3 @@ ${uniqueAllDeselectedWords.length > 0 ? uniqueAllDeselectedWords.join(", ") : "�
 말투는 단정적이기보다 조심스럽고 따뜻하게 해주세요.
 `.trim();
 }
-
-startBtn.addEventListener("click", () => {
-  currentStepIndex = 0;
-  showScreen("journey");
-  renderStep();
-});
-
-backBtn.addEventListener("click", () => {
-  if (currentStepIndex === 0) {
-    return;
-  }
-
-  currentStepIndex -= 1;
-  renderStep();
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-copyBtn.addEventListener("click", async () => {
-  const prompt = makePrompt();
-
-  try {
-    await navigator.clipboard.writeText(prompt);
-    copyBtn.textContent = "복사 완료";
-    setTimeout(() => {
-      copyBtn.textContent = "AI 분석 프롬프트 복사하기";
-    }, 1600);
-  } catch (error) {
-    alert("복사에 실패했습니다. 결과 내용을 직접 선택해서 복사해주세요.");
-  }
-});
-
-restartBtn.addEventListener("click", () => {
-  Object.keys(answers).forEach((key) => {
-    answers[key] = [];
-  });
-
-  currentStepIndex = 0;
-  showScreen("start");
-});

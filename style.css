@@ -5,11 +5,8 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(255, 221, 105, 0.28), transparent 34%),
-    radial-gradient(circle at bottom right, rgba(148, 201, 109, 0.25), transparent 36%),
-    #fff9df;
-  color: #26311f;
+  background: #fffaf0;
+  color: #24301f;
 }
 
 .app {
@@ -28,11 +25,11 @@ body {
 }
 
 .card {
-  background: rgba(255, 253, 239, 0.92);
-  border: 1px solid #e9df9f;
+  background: #fffdf6;
+  border: 1px solid #dfe8bd;
   border-radius: 28px;
   padding: 32px;
-  box-shadow: 0 18px 38px rgba(109, 132, 63, 0.16);
+  box-shadow: 0 16px 32px rgba(91, 120, 57, 0.12);
 }
 
 .intro-card {
@@ -43,7 +40,7 @@ body {
 .eyebrow {
   margin: 0 0 10px;
   font-size: 14px;
-  color: #7a9b2f;
+  color: #5f8f3e;
   font-weight: 800;
   letter-spacing: 0.04em;
 }
@@ -68,7 +65,7 @@ h2 {
   max-width: 520px;
   font-size: 17px;
   line-height: 1.7;
-  color: #5f633d;
+  color: #5d684c;
 }
 
 .top-bar {
@@ -84,20 +81,20 @@ h2 {
   margin: 4px 0 0;
   padding: 8px 14px;
   border-radius: 999px;
-  background: #fffdf0;
-  border: 1px solid #eadf9c;
+  background: #fffdf6;
+  border: 1px solid #dfe8bd;
   font-weight: 800;
-  color: #79952f;
-  box-shadow: 0 6px 16px rgba(180, 159, 64, 0.12);
+  color: #4f8636;
+  box-shadow: 0 6px 14px rgba(91, 120, 57, 0.08);
 }
 
 .guide {
   margin-bottom: 22px;
   padding: 16px 18px;
   border-radius: 20px;
-  background: #fffdf0;
-  border: 1px solid #eadf9c;
-  color: #66623b;
+  background: #fffdf6;
+  border: 1px solid #dfe8bd;
+  color: #5d684c;
   line-height: 1.6;
 }
 
@@ -109,9 +106,9 @@ h2 {
 }
 
 .word-btn {
-  border: 1px solid #d9d99a;
-  background: rgba(255, 254, 245, 0.96);
-  color: #2f3a22;
+  border: 1px solid #cfe3a2;
+  background: #fffdf6;
+  color: #26311f;
   border-radius: 999px;
   padding: 11px 16px;
   font-size: 15px;
@@ -121,15 +118,15 @@ h2 {
 
 .word-btn:hover {
   transform: translateY(-1px);
-  border-color: #9fbd4f;
-  background: #fff8bf;
+  border-color: #91bf5b;
+  background: #f2f8d7;
 }
 
 .word-btn.selected {
-  background: linear-gradient(135deg, #8fbd48, #5f9f55);
+  background: #5f9f55;
   color: white;
-  border-color: #6fa83f;
-  box-shadow: 0 8px 16px rgba(91, 143, 61, 0.22);
+  border-color: #5f9f55;
+  box-shadow: 0 8px 16px rgba(95, 159, 85, 0.22);
 }
 
 .actions {
@@ -153,35 +150,39 @@ button {
 }
 
 .primary-btn {
-  background: linear-gradient(135deg, #f2c94c, #8fbd48);
-  color: #26311f;
-  box-shadow: 0 10px 20px rgba(148, 159, 55, 0.2);
+  background: #8fbd48;
+  color: #1f2d18;
+  box-shadow: 0 10px 20px rgba(143, 189, 72, 0.22);
 }
 
 .primary-btn:hover {
-  filter: brightness(1.02);
+  background: #7faf3d;
 }
 
 .primary-btn:disabled {
-  background: #d8d6b2;
-  color: #7d7a62;
+  background: #d8dfbd;
+  color: #7a806a;
   cursor: not-allowed;
   box-shadow: none;
 }
 
 .secondary-btn {
-  background: #f2edd6;
-  color: #5f633d;
+  background: #eef4d8;
+  color: #4f6336;
+}
+
+.secondary-btn:hover {
+  background: #e4efc7;
 }
 
 .recovery-block {
   width: 100%;
   padding: 18px;
-  background: rgba(255, 253, 239, 0.94);
-  border: 1px solid #e9df9f;
+  background: #fffdf6;
+  border: 1px solid #dfe8bd;
   border-radius: 22px;
   margin-bottom: 14px;
-  box-shadow: 0 8px 18px rgba(109, 132, 63, 0.08);
+  box-shadow: 0 8px 18px rgba(91, 120, 57, 0.08);
 }
 
 .recovery-title {
@@ -206,10 +207,11 @@ button {
 .final-word {
   padding: 14px 20px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #f2c94c, #6fa83f);
-  color: #26311f;
+  background: #5f9f55;
+  color: white;
+  font-size: 20px;
   font-weight: 900;
-  box-shadow: 0 8px 16px rgba(148, 159, 55, 0.2);
+  box-shadow: 0 8px 16px rgba(95, 159, 85, 0.22);
 }
 
 .result-summary {
@@ -220,8 +222,8 @@ button {
 
 .summary-box {
   padding: 16px;
-  background: #fffdf0;
-  border: 1px solid #e9df9f;
+  background: #fffdf6;
+  border: 1px solid #dfe8bd;
   border-radius: 20px;
 }
 
@@ -233,7 +235,7 @@ button {
 
 .summary-box p {
   margin: 0;
-  color: #66623b;
+  color: #5d684c;
   line-height: 1.6;
 }
 
@@ -273,16 +275,16 @@ button {
     padding: 10px 14px;
   }
 
+  .final-word {
+    font-size: 17px;
+  }
+
   .actions {
     flex-direction: column;
   }
 
   .primary-btn,
   .secondary-btn {
-    width: 100%;  
+    width: 100%;
   }
-  .final-word {
-  font-size: 17px;
-  }
-  
 }

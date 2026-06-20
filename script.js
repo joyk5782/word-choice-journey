@@ -332,8 +332,8 @@ function renderRecoveryStep() {
 
     const title = document.createElement("p");
     title.className = "recovery-title";
-    title.textContent = '"' + hardWord + '"을(를) 넘어설 단어를 입력하세요';
-
+    title.textContent = hardWord + "을(를) 넘어설 단어를 입력하세요";
+    
     const input = document.createElement("input");
     input.type = "text";
     input.className = "recovery-input";

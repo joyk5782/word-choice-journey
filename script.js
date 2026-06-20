@@ -351,34 +351,100 @@ function makePrompt() {
     return `${word} → ${answers.recoveryWords[index]}`;
   });
 
+  const stepDescriptions = {
+    step1: {
+      title: "1단계. 과거를 회상할 때 긍정적인 순간을 떠올리는 단어",
+      selected: answers.pastPositive
+    },
+    step2: {
+      title: "2단계. 과거를 회상할 때 부정적인 순간을 떠올리는 단어",
+      selected: answers.pastNegative
+    },
+    step3: {
+      title: "3단계. 지금의 내가 소중하게 생각하는 단어",
+      selected: answers.currentPrecious
+    },
+    step4: {
+      title: "4단계. 지금의 내가 힘들게 느껴지는 단어",
+      selected: answers.currentHard
+    },
+    step5: {
+      title: "5단계. 과거와 지금 나를 지탱하는 단어",
+      selected: answers.supportingWords
+    },
+    step6: {
+      title: "6단계. 남아 있는 힘든 단어",
+      selected: answers.remainingHardWords
+    },
+    step7: {
+      title: "7단계. 힘든 무게를 극복할 단어",
+      selected: recoveryPairs
+    },
+    step8: {
+      title: "8단계. 최종 5개의 단어",
+      selected: answers.finalWords
+    }
+  };
+
+  const processLines = Object.entries(stepDescriptions)
+    .map(([stepKey, info]) => {
+      const timeText = journeyLog.stepTimes[stepKey]
+        ? formatTime(journeyLog.stepTimes[stepKey])
+        : "기록 없음";
+
+      const deselected = journeyLog.deselectedWords[stepKey] || [];
+      const uniqueDeselected = [...new Set(deselected)];
+
+      const deselectedText = uniqueDeselected.length > 0
+        ? uniqueDeselected.join(", ")
+        : "없음";
+
+      return `
+${info.title}
+- 최종 선택한 단어: ${info.selected.join(", ")}
+- 이 단계에서 걸린 시간: ${timeText}
+- 선택했다가 취소한 단어: ${deselectedText}
+`.trim();
+    })
+    .join("\n\n");
+
+  const longestStep = Object.entries(journeyLog.stepTimes)
+    .sort((a, b) => b[1] - a[1])[0];
+
+  const longestStepText = longestStep
+    ? `${getStepTitleByKey(longestStep[0])} (${formatTime(longestStep[1])})`
+    : "기록 없음";
+
+  const allDeselectedWords = Object.values(journeyLog.deselectedWords)
+    .flat();
+
+  const uniqueAllDeselectedWords = [...new Set(allDeselectedWords)];
+
   return `
-아래는 내가 단어 선택 여정을 통해 고른 결과입니다.
+나는 '단어 선택 여정'을 통해 과거의 기억, 현재의 마음, 앞으로의 방향을 정리했습니다.
 
-1단계. 과거를 회상할 때 긍정적인 순간을 떠올리는 단어
-${answers.pastPositive.join(", ")}
+아래 결과를 바탕으로 나를 분석해주세요.
+단순히 단어 뜻만 풀이하지 말고, 선택 과정에서 드러난 고민의 흔적까지 함께 해석해주세요.
 
-2단계. 과거를 회상할 때 부정적인 순간을 떠올리는 단어
-${answers.pastNegative.join(", ")}
+[전체 선택 과정]
 
-3단계. 지금의 내가 소중하게 생각하는 단어
-${answers.currentPrecious.join(", ")}
+${processLines}
 
-4단계. 지금의 내가 힘들게 느껴지는 단어
-${answers.currentHard.join(", ")}
+[가장 오래 고민한 단계]
+${longestStepText}
 
-5단계. 과거와 지금 나를 지탱하는 단어
-${answers.supportingWords.join(", ")}
+[전체 과정에서 선택했다가 취소한 단어]
+${uniqueAllDeselectedWords.length > 0 ? uniqueAllDeselectedWords.join(", ") : "없음"}
 
-6단계. 남아 있는 힘든 단어
-${answers.remainingHardWords.join(", ")}
+[분석 요청]
+1. 과거의 긍정 단어와 부정 단어를 통해, 내가 어떤 기억을 힘으로 삼고 어떤 기억을 아직 무겁게 느끼는지 분석해주세요.
+2. 지금의 내가 소중하게 생각하는 단어와 힘들게 느끼는 단어를 비교해서, 현재 내 마음의 중심과 부담을 설명해주세요.
+3. 과거와 지금 나를 지탱하는 단어가 무엇을 의미하는지 분석해주세요.
+4. 남아 있는 힘든 단어와 그것을 극복할 단어의 연결을 해석해주세요.
+5. 최종 5개의 단어를 바탕으로, 앞으로 내가 어떤 방향으로 나아가고 싶어 하는지 정리해주세요.
+6. 오래 고민한 단계와 선택했다가 취소한 단어가 있다면, 그 단어들이 어떤 망설임이나 갈등을 보여주는지도 부드럽게 설명해주세요.
 
-7단계. 힘든 무게를 극복할 단어
-${recoveryPairs.join(", ")}
-
-8단계. 최종 5개의 단어
-${answers.finalWords.join(", ")}
-
-이 결과를 바탕으로 나의 과거, 현재, 앞으로의 방향을 부드럽고 깊이 있게 분석해주세요.
+말투는 단정적이기보다 조심스럽고 따뜻하게 해주세요.
 `.trim();
 }
 

@@ -33,15 +33,15 @@ const journeyLog = {
 const stepInfo = {
   step1: {
     label: "1단계",
-    title: "1단계. 과거에 긍정적인 순간을 떠올렸을 때 연상되는 단어",
-    guide: "과거에 긍정적인 순간을 떠올렸을 때 연상되는 단어 5개를 골라주세요.",
+    title: "1단계. 과거의 긍정적인 순간",
+    guide: "과거의 긍정적인 순간을 떠올렸을 때 연상되는 단어 5개를 골라주세요.",
     selectCount: 5,
     resultKey: "pastPositive"
   },
   step2: {
     label: "2단계",
-    title: "2단계. 과거에 부정적인 순간을 떠올렸을 때 연상되는 단어",
-    guide: "과거에 부정적인 순간을 떠올렸을 때 연상되는 단어 5개를 골라주세요.",
+    title: "2단계. 과거의 부정적인 순간",
+    guide: "과거의 부정적인 순간을 떠올렸을 때 연상되는 단어 5개를 골라주세요.",
     selectCount: 5,
     resultKey: "pastNegative"
   },
@@ -61,28 +61,28 @@ const stepInfo = {
   },
   step5: {
     label: "5단계",
-    title: "5단계. 과거와 지금의 나에게 중요한 핵심 단어",
-    guide: "과거와 지금의 나에게 중요한 핵심 단어 5개를 골라주세요.",
+    title: "5단계. 과거와 지금의 중요한 단어 중 나에게 남는 단어",
+    guide: "앞에서 고른 '과거의 긍정적인 순간' 단어와 '지금의 내가 소중하게 생각하는 단어'를 함께 보며, 나에게 중요한 단어 5개를 골라주세요.",
     selectCount: 5,
     resultKey: "supportingWords"
   },
   step6: {
     label: "6단계",
-    title: "6단계. 과거와 지금의 나를 힘들게 하는 핵심 단어",
-    guide: "과거와 지금의 나를 힘들게 하는 핵심 단어 5개를 골라주세요.",
+    title: "6단계. 과거와 지금의 힘든 단어 중 마음에 남는 단어",
+    guide: "앞에서 고른 '과거의 부정적인 순간' 단어와 '지금의 나를 힘들게 하는 단어'를 함께 보며, 특히 마음에 남는 단어 5개를 골라주세요.",
     selectCount: 5,
     resultKey: "remainingHardWords"
   },
   step7: {
     label: "7단계",
-    title: "7단계. 나를 힘들게 하는 것을 넘어서는 데 필요한 단어",
-    guide: "나를 힘들게 하는 것을 넘어서는 데 필요한 단어를 적어주세요.",
+    title: "7단계. 힘든 단어 옆에 필요한 단어 적기",
+    guide: "앞에서 고른 힘든 단어를 하나씩 보며, 그 마음을 덜어내거나 넘어서는 데 도움이 될 단어를 적어주세요.",
     resultKey: "recoveryWords"
   },
   step8: {
     label: "8단계",
-    title: "8단계. 최종 5개의 단어",
-    guide: "지금의 나에게 가장 중요한 최종 단어 5개를 골라주세요.",
+    title: "8단계. 지금 나에게 남기고 싶은 최종 단어",
+    guide: "여정의 마지막 단계입니다. 여정을 지나오면서 떠오르는, 나에게 가장 중요하게 남는 단어 5개를 골라주세요.",
     selectCount: 5,
     resultKey: "finalWords"
   }
@@ -446,7 +446,7 @@ function renderRecoveryStep() {
     block.className = "recovery-block";
 
     title.className = "recovery-title";
-    title.textContent = "'" + hardWord + "'을(를) 넘어서는 데 필요한 단어";
+    title.textContent = "'" + hardWord + "' 옆에 적고 싶은 단어";
 
     input.type = "text";
     input.className = "recovery-input";

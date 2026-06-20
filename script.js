@@ -322,61 +322,55 @@ if (currentStep === stepOrder.length - 1) {
 }
 
 function renderRecoveryStep() {
-stepTitle.textContent = flow.step7.title;
-guideText.textContent = "남아 있는 힘든 단어마다, 그 무게를 넘어서는 데 필요한 단어를 직접 적어주세요.";
-wordArea.innerHTML = "";
+  stepTitle.textContent = flow.step7.title;
+  guideText.textContent = "남아 있는 힘든 단어마다, 그 무게를 넘어서는 데 필요한 단어를 직접 적어주세요.";
+  wordArea.innerHTML = "";
 
-answers.remainingHardWords.forEach((hardWord) => {
-const block = document.createElement("div");
-block.className = "recovery-block";
+  answers.remainingHardWords.forEach((hardWord) => {
+    const block = document.createElement("div");
+    block.className = "recovery-block";
 
-```
-const title = document.createElement("p");
-title.className = "recovery-title";
-title.textContent = `"${hardWord}"을(를) 넘어설 단어를 입력하세요`;
+    const title = document.createElement("p");
+    title.className = "recovery-title";
+    title.textContent = '"' + hardWord + '"을(를) 넘어설 단어를 입력하세요';
 
-const input = document.createElement("input");
-input.type = "text";
-input.className = "recovery-input";
-input.placeholder = "예: 회복, 용기, 정리, 휴식";
-input.value = recoverySelection[hardWord] || "";
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "recovery-input";
+    input.placeholder = "예: 회복, 용기, 정리, 휴식";
+    input.value = recoverySelection[hardWord] || "";
 
-input.addEventListener("input", () => {
-  const currentValue = input.value.trim();
+    input.addEventListener("input", () => {
+      const currentValue = input.value.trim();
 
-  if (currentValue.length > 0) {
-    recoverySelection[hardWord] = currentValue;
-  } else {
-    delete recoverySelection[hardWord];
-  }
+      if (currentValue.length > 0) {
+        recoverySelection[hardWord] = currentValue;
+      } else {
+        delete recoverySelection[hardWord];
+      }
+
+      updateRecoveryCounter();
+    });
+
+    block.appendChild(title);
+    block.appendChild(input);
+    wordArea.appendChild(block);
+  });
 
   updateRecoveryCounter();
-});
 
-block.appendChild(title);
-block.appendChild(input);
-wordArea.appendChild(block);
-```
+  prevBtn.disabled = false;
+  nextBtn.disabled = true;
+  nextBtn.textContent = "다음";
 
-});
+  nextBtn.onclick = () => {
+    saveStepTime();
 
-updateRecoveryCounter();
+    answers.recoveryWords = answers.remainingHardWords.map((word) => recoverySelection[word]);
 
-prevBtn.disabled = false;
-nextBtn.disabled = true;
-nextBtn.textContent = "다음";
-
-nextBtn.onclick = () => {
-saveStepTime();
-
-```
-answers.recoveryWords = answers.remainingHardWords.map((word) => recoverySelection[word]);
-
-currentStep += 1;
-renderStep();
-```
-
-};
+    currentStep += 1;
+    renderStep();
+  };
 }
 
 function updateCounter(selectCount) {

@@ -8,7 +8,7 @@
 </head>
 <body>
   <main class="app">
-    <section id="start-screen" class="screen active">
+    <section id="intro-screen" class="screen active">
       <div class="card intro-card">
         <p class="eyebrow">Word Choice Journey</p>
         <h1>단어 선택 여정</h1>
@@ -28,12 +28,12 @@
         <p id="counter" class="counter"></p>
       </div>
 
-      <div id="guide" class="guide"></div>
+      <div id="guide-text" class="guide"></div>
 
       <div id="word-area" class="word-area"></div>
 
       <div class="actions">
-        <button id="back-btn" class="secondary-btn">이전</button>
+        <button id="prev-btn" class="secondary-btn">이전</button>
         <button id="next-btn" class="primary-btn" disabled>다음</button>
       </div>
     </section>
@@ -47,7 +47,7 @@
 
         <div id="result-summary" class="result-summary"></div>
 
-        <button id="copy-btn" class="primary-btn">AI 분석 프롬프트 복사하기</button>
+        <button id="copy-prompt-btn" class="primary-btn">AI 분석 프롬프트 복사하기</button>
         <button id="restart-btn" class="secondary-btn">처음부터 다시 하기</button>
       </div>
     </section>

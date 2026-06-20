@@ -197,6 +197,22 @@ button {
   gap: 10px;
 }
 
+.recovery-input {
+  width: 100%;
+  border: 1px solid #cfe3a2;
+  background: #fffdf6;
+  color: #26311f;
+  border-radius: 16px;
+  padding: 13px 15px;
+  font-size: 16px;
+  outline: none;
+}
+
+.recovery-input:focus {
+  border-color: #5f9f55;
+  box-shadow: 0 0 0 3px rgba(95, 159, 85, 0.14);
+}
+
 .final-words {
   display: flex;
   flex-wrap: wrap;

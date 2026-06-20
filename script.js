@@ -55,8 +55,8 @@ const stepInfo = {
   step4: {
     label: "4단계",
     title: "4단계. 지금의 내가 힘들게 느껴지는 단어",
-    guide: "지금의 내가 힘들게 느껴지는 단어 10개를 골라주세요.",
-    selectCount: 10,
+    guide: "지금의 내가 힘들게 느껴지는 단어 7개를 골라주세요.",
+    selectCount: 7,
     resultKey: "currentHard"
   },
   step5: {

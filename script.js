@@ -309,7 +309,7 @@ function renderRecoveryStep() {
 
     const title = document.createElement("p");
     title.className = "recovery-title";
-    title.textContent = hardWord;
+    title.textContent = `${hardWord}을/를 극복할 단어를 선택하세요`;
 
     const options = document.createElement("div");
     options.className = "recovery-options";

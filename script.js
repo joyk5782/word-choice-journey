@@ -54,29 +54,29 @@ const stepInfo = {
   },
   step4: {
     label: "4단계",
-    title: "4단계. 지금의 내가 힘들게 느껴지는 단어",
-    guide: "지금의 내가 힘들게 느껴지는 단어 7개를 골라주세요.",
+    title: "4단계. 지금의 나를 힘들게 하는 단어",
+    guide: "지금의 나를 힘들게 하는 단어 7개를 골라주세요.",
     selectCount: 7,
     resultKey: "currentHard"
   },
   step5: {
     label: "5단계",
-    title: "5단계. 과거와 지금 나를 지탱하는 단어",
-    guide: "과거와 지금 나를 지탱하는 단어 5개를 골라주세요.",
+    title: "5단계. 과거와 지금의 나에게 중요한 핵심 단어",
+    guide: "과거와 지금의 나에게 중요한 핵심 단어 5개를 골라주세요.",
     selectCount: 5,
     resultKey: "supportingWords"
   },
   step6: {
     label: "6단계",
-    title: "6단계. 남아 있는 힘든 단어",
-    guide: "아직 남아 있는 힘든 단어 5개를 골라주세요.",
+    title: "6단계. 과거와 지금의 나를 힘들게 하는 핵심 단어",
+    guide: "과거와 지금의 나를 힘들게 하는 핵심 단어 5개를 골라주세요.",
     selectCount: 5,
     resultKey: "remainingHardWords"
   },
   step7: {
     label: "7단계",
-    title: "7단계. 힘든 무게를 극복할 단어",
-    guide: "힘든 무게를 극복하는 데 필요한 단어를 직접 입력해주세요.",
+    title: "7단계. 나를 힘들게 하는 것을 넘어서는 데 필요한 단어",
+    guide: "나를 힘들게 하는 것을 넘어서는 데 필요한 단어를 적어주세요.",
     resultKey: "recoveryWords"
   },
   step8: {

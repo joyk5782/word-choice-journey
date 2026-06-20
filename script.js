@@ -310,12 +310,12 @@ function renderRecoveryStep() {
 
     const title = document.createElement("p");
     title.className = "recovery-title";
-    title.textContent = `"${hardWord}"을(를) 넘어설 단어나 문장을 입력하세요`;
+    title.textContent = `"${hardWord}"을(를) 넘어설 단어를 입력하세요`;
 
     const input = document.createElement("input");
     input.type = "text";
     input.className = "recovery-input";
-    input.placeholder = "예: 회복, 용기, 나를 돌아볼 조용한 시간이 필요해.";
+    input.placeholder = "예: 회복, 용기, 정리, 휴식.";
     input.value = recoverySelection[hardWord] || "";
 
     input.addEventListener("input", () => {

@@ -204,7 +204,7 @@ button {
 }
 
 .final-word {
-  padding: 12px 18px;
+  padding: 14px 20px;
   border-radius: 999px;
   background: linear-gradient(135deg, #f2c94c, #6fa83f);
   color: #26311f;
@@ -279,6 +279,10 @@ button {
 
   .primary-btn,
   .secondary-btn {
-    width: 100%;
+    width: 100%;  
   }
+  .final-word {
+  font-size: 17px;
+  }
+  
 }

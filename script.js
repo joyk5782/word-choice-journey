@@ -390,20 +390,15 @@ function renderWordSelection(options) {
       }
 
       const groupBlock = document.createElement("div");
-      const groupTitle = document.createElement("p");
       const groupWordsArea = document.createElement("div");
 
       groupBlock.className = "word-group";
-      groupTitle.className = "word-group-title";
       groupWordsArea.className = "word-group-words";
-
-      groupTitle.textContent = group.label || "단어 묶음";
 
       groupWords.forEach(function (word) {
         groupWordsArea.appendChild(makeWordButton(word));
       });
 
-      groupBlock.appendChild(groupTitle);
       groupBlock.appendChild(groupWordsArea);
       wordArea.appendChild(groupBlock);
     });

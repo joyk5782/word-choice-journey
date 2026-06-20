@@ -541,8 +541,14 @@ ${info.title}
     ? `${getStepTitleByKey(longestStep[0])} (${formatTime(longestStep[1])})`
     : "기록 없음";
 
+  const allSelectedWords = Object.values(stepDescriptions)
+  .flatMap((info) => info.selected);
+
   const allDeselectedWords = Object.values(journeyLog.deselectedWords).flat();
-  const uniqueAllDeselectedWords = [...new Set(allDeselectedWords)];
+
+  const uniqueAllDeselectedWords = [...new Set(allDeselectedWords)].filter((word) => {
+    return !allSelectedWords.includes(word);
+  });
 
   return `
 나는 '단어 선택 여정'을 통해 과거의 기억, 현재의 마음, 앞으로의 방향을 정리했습니다.

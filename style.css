@@ -68,6 +68,18 @@ h2 {
   color: #5d684c;
 }
 
+.intro-note {
+  max-width: 560px;
+  margin: -12px auto 28px;
+  padding: 13px 16px;
+  border: 1px solid #dfe8bd;
+  border-radius: 18px;
+  background: #fffaf0;
+  color: #6a7658;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
 #journey-screen {
   position: relative;
   padding-top: 28px;

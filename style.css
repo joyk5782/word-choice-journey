@@ -1,1 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>단어 선택 여정</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <section id="start-screen" class="screen active">
+      <div class="card intro-card">
+        <p class="eyebrow">Word Choice Journey</p>
+        <h1>단어 선택 여정</h1>
+        <p class="intro-text">
+          과거의 기억과 지금의 마음을 지나, 앞으로 나아갈 단어를 찾아보세요.
+        </p>
+        <button id="start-btn" class="primary-btn">시작하기</button>
+      </div>
+    </section>
 
+    <section id="journey-screen" class="screen">
+      <div class="top-bar">
+        <div>
+          <p id="step-label" class="eyebrow">1단계</p>
+          <h2 id="step-title"></h2>
+        </div>
+        <p id="counter" class="counter"></p>
+      </div>
+
+      <div id="guide" class="guide"></div>
+
+      <div id="word-area" class="word-area"></div>
+
+      <div class="actions">
+        <button id="back-btn" class="secondary-btn">이전</button>
+        <button id="next-btn" class="primary-btn" disabled>다음</button>
+      </div>
+    </section>
+
+    <section id="result-screen" class="screen">
+      <div class="card result-card">
+        <p class="eyebrow">Result</p>
+        <h2>나의 최종 5개의 단어</h2>
+
+        <div id="final-words" class="final-words"></div>
+
+        <div id="result-summary" class="result-summary"></div>
+
+        <button id="copy-btn" class="primary-btn">AI 분석 프롬프트 복사하기</button>
+        <button id="restart-btn" class="secondary-btn">처음부터 다시 하기</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="words.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

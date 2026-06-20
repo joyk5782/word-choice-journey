@@ -33,15 +33,15 @@ const journeyLog = {
 const stepInfo = {
   step1: {
     label: "1단계",
-    title: "1단계. 과거를 회상할 때 긍정적인 순간을 떠올리는 단어",
-    guide: "과거를 떠올릴 때 긍정적인 순간과 연결되는 단어 5개를 골라주세요.",
+    title: "1단계. 과거에 긍정적인 순간을 떠올렸을 때 연상되는 단어",
+    guide: "과거에 긍정적인 순간을 떠올렸을 때 연상되는 단어 5개를 골라주세요.",
     selectCount: 5,
     resultKey: "pastPositive"
   },
   step2: {
     label: "2단계",
-    title: "2단계. 과거를 회상할 때 부정적인 순간을 떠올리는 단어",
-    guide: "과거를 떠올릴 때 아직 무겁게 남아 있는 단어 5개를 골라주세요.",
+    title: "2단계. 과거에 부정적인 순간을 떠올렸을 때 연상되는 단어",
+    guide: "과거에 부정적인 순간을 떠올렸을 때 연상되는 단어 5개를 골라주세요.",
     selectCount: 5,
     resultKey: "pastNegative"
   },
@@ -55,34 +55,34 @@ const stepInfo = {
   step4: {
     label: "4단계",
     title: "4단계. 지금의 내가 힘들게 느껴지는 단어",
-    guide: "지금의 내가 힘들게 느끼는 감정이나 상태에 가까운 단어 10개를 골라주세요.",
+    guide: "지금의 내가 힘들게 느껴지는 단어 10개를 골라주세요.",
     selectCount: 10,
     resultKey: "currentHard"
   },
   step5: {
     label: "5단계",
     title: "5단계. 과거와 지금 나를 지탱하는 단어",
-    guide: "과거의 긍정 단어와 지금 소중한 단어 중, 나를 지탱하는 단어 5개를 골라주세요.",
+    guide: "과거와 지금 나를 지탱하는 단어 5개를 골라주세요.",
     selectCount: 5,
     resultKey: "supportingWords"
   },
   step6: {
     label: "6단계",
     title: "6단계. 남아 있는 힘든 단어",
-    guide: "과거의 부정 단어와 지금 힘든 단어 중, 아직 남아 있는 힘든 단어 5개를 골라주세요.",
+    guide: "아직 남아 있는 힘든 단어 5개를 골라주세요.",
     selectCount: 5,
     resultKey: "remainingHardWords"
   },
   step7: {
     label: "7단계",
     title: "7단계. 힘든 무게를 극복할 단어",
-    guide: "남아 있는 힘든 단어마다, 그 무게를 넘어서는 데 필요한 단어를 직접 적어주세요.",
+    guide: "힘든 무게를 극복하는 데 필요한 단어를 직접 입력해주세요.",
     resultKey: "recoveryWords"
   },
   step8: {
     label: "8단계",
     title: "8단계. 최종 5개의 단어",
-    guide: "나를 지탱한 단어와 극복을 위한 단어 중, 지금의 나에게 가장 중요한 최종 5개를 골라주세요.",
+    guide: "지금의 나에게 가장 중요한 최종 단어 5개를 골라주세요.",
     selectCount: 5,
     resultKey: "finalWords"
   }
@@ -159,6 +159,15 @@ function getCurrentInfo() {
   return stepInfo[getCurrentStepKey()];
 }
 
+function getStepProgressText() {
+  return String(currentStep + 1) + "단계 / " + String(stepOrder.length) + "단계";
+}
+
+function getStepProgressPercent() {
+  const progress = ((currentStep + 1) / stepOrder.length) * 100;
+  return String(progress) + "%";
+}
+
 function startStepTime() {
   journeyLog.stepStartTime = Date.now();
 }
@@ -195,9 +204,10 @@ function renderStep() {
   currentSelection = [];
 
   if (stepLabel) {
-    stepLabel.textContent = info.label;
+    stepLabel.textContent = getStepProgressText();
   }
 
+  journeyScreen.style.setProperty("--step-progress", getStepProgressPercent());
   prevBtn.disabled = currentStep === 0;
   nextBtn.textContent = currentStep === stepOrder.length - 1 ? "결과 보기" : "다음";
   nextBtn.disabled = true;
@@ -208,6 +218,7 @@ function renderStep() {
     renderWordSelection({
       title: getPoolTitle(stepKey),
       words: getPoolWords(stepKey),
+      groups: getPoolGroups(stepKey),
       selectCount: getPoolSelectCount(stepKey),
       resultKey: info.resultKey,
       guideText: info.guide
@@ -270,7 +281,29 @@ function getPoolWords(stepKey) {
     return pools[stepKey].words;
   }
 
+  if (pools && pools[stepKey] && Array.isArray(pools[stepKey].groups)) {
+    return pools[stepKey].groups.reduce(function (allWords, group) {
+      if (!group || !Array.isArray(group.words)) {
+        return allWords;
+      }
+
+      return allWords.concat(group.words);
+    }, []);
+  }
+
   return [];
+}
+
+function getPoolGroups(stepKey) {
+  const pools = getWordPools();
+
+  if (!pools || !pools[stepKey] || !Array.isArray(pools[stepKey].groups)) {
+    return [];
+  }
+
+  return pools[stepKey].groups.filter(function (group) {
+    return group && Array.isArray(group.words) && group.words.length > 0;
+  });
 }
 
 function getPoolSelectCount(stepKey) {
@@ -294,6 +327,7 @@ function getWordPools() {
 function renderWordSelection(options) {
   const title = options.title;
   const words = options.words;
+  const groups = Array.isArray(options.groups) ? options.groups : [];
   const selectCount = options.selectCount;
   const resultKey = options.resultKey;
   const guide = options.guideText;
@@ -311,8 +345,9 @@ function renderWordSelection(options) {
   }
 
   const uniqueWords = Array.from(new Set(words));
+  const uniqueWordSet = new Set(uniqueWords);
 
-  uniqueWords.forEach(function (word) {
+  function makeWordButton(word) {
     const button = document.createElement("button");
 
     button.type = "button";
@@ -341,8 +376,42 @@ function renderWordSelection(options) {
       updateCounter(selectCount);
     });
 
-    wordArea.appendChild(button);
-  });
+    return button;
+  }
+
+  if (groups.length > 0) {
+    groups.forEach(function (group) {
+      const groupWords = group.words.filter(function (word) {
+        return uniqueWordSet.has(word);
+      });
+
+      if (groupWords.length === 0) {
+        return;
+      }
+
+      const groupBlock = document.createElement("div");
+      const groupTitle = document.createElement("p");
+      const groupWordsArea = document.createElement("div");
+
+      groupBlock.className = "word-group";
+      groupTitle.className = "word-group-title";
+      groupWordsArea.className = "word-group-words";
+
+      groupTitle.textContent = group.label || "단어 묶음";
+
+      groupWords.forEach(function (word) {
+        groupWordsArea.appendChild(makeWordButton(word));
+      });
+
+      groupBlock.appendChild(groupTitle);
+      groupBlock.appendChild(groupWordsArea);
+      wordArea.appendChild(groupBlock);
+    });
+  } else {
+    uniqueWords.forEach(function (word) {
+      wordArea.appendChild(makeWordButton(word));
+    });
+  }
 
   updateCounter(selectCount);
 

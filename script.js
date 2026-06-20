@@ -84,20 +84,33 @@ restartBtn.addEventListener("click", () => {
   introScreen.classList.add("active");
 });
 
-copyPromptBtn.addEventListener("click", async () => {
+copyPromptBtn.addEventListener("click", () => {
   const prompt = makePrompt();
 
-  try {
-    await navigator.clipboard.writeText(prompt);
-    copyPromptBtn.textContent = "복사 완료";
-    setTimeout(() => {
-      copyPromptBtn.textContent = "AI 프롬프트 복사하기";
-    }, 1500);
-  } catch (error) {
-    alert("복사에 실패했습니다. 다시 시도해주세요.");
-  }
-});
+  const textarea = document.createElement("textarea");
+  textarea.value = prompt;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.top = "-9999px";
+  textarea.style.left = "-9999px";
 
+  document.body.appendChild(textarea);
+  textarea.select();
+  textarea.setSelectionRange(0, textarea.value.length);
+
+  try {
+    document.execCommand("copy");
+    copyPromptBtn.textContent = "복사 완료";
+  } catch (error) {
+    alert("복사에 실패했습니다. 프롬프트를 직접 선택해서 복사해주세요.");
+  }
+
+  document.body.removeChild(textarea);
+
+  setTimeout(() => {
+    copyPromptBtn.textContent = "AI 프롬프트 복사하기";
+  }, 1500);
+});
 function getCurrentStepKey() {
   return stepOrder[currentStep];
 }

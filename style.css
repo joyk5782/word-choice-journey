@@ -148,18 +148,7 @@ h2 {
 
 .word-group {
   width: 100%;
-  padding: 16px;
-  background: #fffdf6;
-  border: 1px solid #dfe8bd;
-  border-radius: 20px;
-  box-shadow: 0 8px 18px rgba(91, 120, 57, 0.08);
-}
-
-.word-group-title {
-  margin: 0 0 12px;
-  color: #4f8636;
-  font-size: 14px;
-  font-weight: 900;
+  padding: 0;
 }
 
 .word-group-words {

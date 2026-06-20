@@ -298,9 +298,10 @@ function renderWordSelection({ title, words, selectCount, resultKey, guideText: 
   };
 }
 
+
 function renderRecoveryStep() {
   stepTitle.textContent = flow.step7.title;
-  guideText.textContent = "남아 있는 힘든 단어마다, 그 무게를 넘어서는 데 필요한 단어를 하나씩 골라주세요.";
+  guideText.textContent = "남아 있는 힘든 단어마다, 그 무게를 넘어서는 데 필요한 단어를 직접 적어주세요.";
   wordArea.innerHTML = "";
 
   answers.remainingHardWords.forEach((hardWord) => {
@@ -309,41 +310,33 @@ function renderRecoveryStep() {
 
     const title = document.createElement("p");
     title.className = "recovery-title";
-    title.textContent = `${hardWord}을/를 극복할 단어를 선택하세요`;
+    title.textContent = `"${hardWord}"을(를) 넘어설 단어를 입력하세요`;
 
-    const options = document.createElement("div");
-    options.className = "recovery-options";
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "recovery-input";
+    input.placeholder = "예: 회복, 용기, 정리, 휴식";
+    input.value = recoverySelection[hardWord] || "";
 
-    const candidates = recoveryMap[hardWord] || [];
+    input.addEventListener("input", () => {
+      const previous = recoverySelection[hardWord];
+      const currentValue = input.value.trim();
 
-    candidates.forEach((candidate) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "word-btn";
-      button.textContent = candidate;
+      if (previous && previous !== currentValue && currentValue.length > 0) {
+        logDeselectedWord(`${hardWord} → ${previous}`);
+      }
 
-      button.addEventListener("click", () => {
-        const previous = recoverySelection[hardWord];
+      if (currentValue.length > 0) {
+        recoverySelection[hardWord] = currentValue;
+      } else {
+        delete recoverySelection[hardWord];
+      }
 
-        if (previous && previous !== candidate) {
-          logDeselectedWord(`${hardWord} → ${previous}`);
-        }
-
-        recoverySelection[hardWord] = candidate;
-
-        options.querySelectorAll(".word-btn").forEach((btn) => {
-          btn.classList.remove("selected");
-        });
-
-        button.classList.add("selected");
-        updateRecoveryCounter();
-      });
-
-      options.appendChild(button);
+      updateRecoveryCounter();
     });
 
     block.appendChild(title);
-    block.appendChild(options);
+    block.appendChild(input);
     wordArea.appendChild(block);
   });
 

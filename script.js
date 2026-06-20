@@ -319,12 +319,7 @@ function renderRecoveryStep() {
     input.value = recoverySelection[hardWord] || "";
 
     input.addEventListener("input", () => {
-      const previous = recoverySelection[hardWord];
-      const currentValue = input.value.trim();
-
-      if (previous && previous !== currentValue && currentValue.length > 0) {
-        logDeselectedWord(`${hardWord} → ${previous}`);
-      }
+      
 
       if (currentValue.length > 0) {
         recoverySelection[hardWord] = currentValue;
